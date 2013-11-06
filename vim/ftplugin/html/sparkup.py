@@ -282,6 +282,47 @@ class HtmlDialect(Dialect):
         'meta':   {'content': ''},
     }
 
+class HtmlDjangoDialect(HtmlDialect):
+    shortcuts = {
+        'autoescape:off': {
+            'opening_tag': '{% autoescape off %}',
+            'closing_tag': '{% endautoescape %}'},
+        'autoescape:on': {
+            'opening_tag': '{% autoescape on %}',
+            'closing_tag': '{% endautoescape %}'},
+        'filter': {
+            'opening_tag': '{% filter $1 %}',
+            'closing_tag': '{% endfilter %}'},
+        'for': {
+            'opening_tag': '{% for $1 in $2 %}',
+            'closing_tag': '{% endfor %}'},
+        'if': {
+            'opening_tag': '{% if $1 %}',
+            'closing_tag': '{% endif %}'},
+        'ifchanged': {
+            'opening_tag': '{% ifchanged $1 %}',
+            'closing_tag': '{% endifchanged %}'},
+        'ifequal': {
+            'opening_tag': '{% ifequal $1 %}',
+            'closing_tag': '{% endifequal %}'},
+        'ifnotequal': {
+            'opening_tag': '{% ifnotequal $1 %}',
+            'closing_tag': '{% endifnotequal %}'},
+        'spaceless': {
+            'opening_tag': '{% spaceless %}',
+            'closing_tag': '{% endspaceless %}'},
+        'verbatim': {
+            'opening_tag': '{% verbatim %}',
+            'closing_tag': '{% endverbatim %}'},
+        'with': {
+            'opening_tag': '{% with $1 %}',
+            'closing_tag': '{% endwith %}'},
+    }
+
+    def __init__(self):
+        self.shortcuts.extend(super(HtmlDjangoDialect, self).shortcuts)
+
+
 class Parser:
     """The parser.
     """
@@ -298,6 +339,8 @@ class Parser:
         self.options = options
         if self.options.has("xml"):
             self.dialect = XmlDialect()
+        elif self.options.has("htmldjango"):
+            self.dialect = HtmlDjangoDialect()
         else:
             self.dialect = HtmlDialect()
         self.root = Element(parser=self)
@@ -1088,8 +1131,9 @@ class Options:
         ('', 'start-guide-format=', 'To be documented'),
         ('', 'end-guide-format=', 'To be documented'),
         ('', 'xml', 'skip html attribute fillings'),
+        ('', 'htmldjango', 'same as --html, but adds shortcuts for Django templates'),
     ]
-    
+
     # Property: router
     # Router
     router = 1
